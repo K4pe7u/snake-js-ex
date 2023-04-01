@@ -44,4 +44,73 @@ function moveSnake() {
       head.y += blockSize;
       break;
   }
+  snake.unshift(head);
+
+  if (head.x === food.x && head.y === food.y) {
+    score++;
+    food = {
+      x: getRandomInt(0, canvas.width / blockSize) * blockSize,
+      y: getRandomInt(0, canvas.height / blockSize) * blockSize,
+    };
+  } else {
+    snake.pop();
+  }
 }
+
+function changeDirection(event) {
+  switch (event.keyCode) {
+    case 37:
+      if (direction !== "right") {
+        direction = "left";
+      }
+      break;
+    case 38:
+      if (direction !== "down") {
+        direction = "up";
+      }
+      break;
+    case 39:
+      if (direction !== "left") {
+        direction = "right";
+      }
+      break;
+    case 40:
+      if (direction !== "up") {
+        direction = "down";
+      }
+      break;
+  }
+}
+
+function gameOver() {
+  clearInterval(gameLoop);
+  alert(`Game over! Your score is ${score}`);
+}
+
+function checkCollision() {
+  const head = snake[0];
+  if (
+    head.x < 0 ||
+    head.x >= canvas.width ||
+    head.y < 0 ||
+    head.y >= canvas.height
+  ) {
+    gameOver();
+  }
+  for (let i = 1; i < snake.length; i++) {
+    if (head.x === snake[i].x && head.y === snake[i].y) {
+      gameOver();
+    }
+  }
+}
+
+function gameLoop() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawSnake();
+  drawFood();
+  moveSnake();
+  checkCollision();
+}
+
+document.addEventListener("keydown", changeDirection);
+const gameLoop = setInterval(gameLoop, 100);
